@@ -23,5 +23,5 @@ It is aimed to be used with the shopify built in exporter and importer of produc
 ## Run
 ```js
 npm i
-node update
+node update.js
 ```
