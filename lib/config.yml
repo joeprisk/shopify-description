@@ -1,0 +1,3 @@
+PATHS:
+  load: "./csv/products.csv"
+  save: "csv/edited-products.csv"

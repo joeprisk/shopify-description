@@ -1,59 +1,52 @@
-const csvToJson = require('csvtojson');
+const csvToJson        = require('csvtojson'),
+	  helpers          = require('./lib/helpers');
 
-const addDescriptionTitle = require('./lib/add-description-header');
-const editHeaderTags = require('./lib/edit-header-tags');
-const removeEmptyHeaders = require('./lib/remove-empty-headers');
-const saveProductToCsv = require('./lib/save-product-to-csv');
-
-const csvPathLoad = './csv/products.csv';
-
-let products = {};
+let products = {},
+	promises = [];
 
 csvToJson()
-	.fromFile(csvPathLoad)
-	.on('json', product => {
+	.fromFile(helpers.PATHS.load)
+	.on(
+		'json',
+		product => promises.push(
+			Promise
+				.resolve()
+				.then(() => helpers.formatBlankLines(product))
+				.then(() => helpers.isFullProduct(product))
+				.then(() => helpers.addDescriptionHeader(product))
+				.then(() => helpers.editHeaderTags(product))
+				.then(() => helpers.removeEmptyLines(product))
+				.then(() => helpers.removeEmptyHeaders(product))
+				.then(() => addToProducts(product))
+				.catch(() => addToProducts(product))
+		)
+	)
+	.on(
+		'done',
+		(error) => Promise
+			.all(promises)
+			.then(() => helpers.saveProductToCsv(error, helpers.PATHS.save, products))
+	);
 
-		return Promise.resolve()
-			.then(() => {
-
-				Object.keys(product).map((key, index) => {
-					product[key] = !!product[key] ? product[key] : null;
-				});
-
-			})
-			.then(() => isFullProduct(product))
-			.then(() => addDescriptionTitle(product))
-			.then(() => editHeaderTags(product))
-			.then(() => removeEmptyLines(product))
-			.then(() => removeEmptyHeaders(product))
-			.then(() => addToProducts(product))
-			.catch(() => addToProducts(product));
-
-
-	})
-	.on('done', (error) => saveProductToCsv(error, products));
-
-function isFullProduct(product) {
-
-	return (product.Title) ? Promise.resolve() : Promise.reject();
-}
 
 function addToProducts(product) {
 
+	return Promise.resolve()
+				  .then(() => createEmptyProduct(product))
+				  .then(() => helpers.isFullProduct(product))
+				  .then(() => console.log(`${product.Title} :: editing product description.`))
+				  .then(() => products[product.Handle].unshift(product))
+				  .catch(() => products[product.Handle].push(product));
+}
+
+function createEmptyProduct(product) {
+
 	!products[product.Handle] && Object.assign(products, {[product.Handle]: []});
 
-	products[product.Handle].push(product);
-}
-
-function removeEmptyLines(product) {
-
-	Object.keys(product).map(function (key, index) {
-		!!product[key] && (product[key] = product[key].replace(/\n/g, ''));
-	});
-
 	return Promise.resolve();
-
 }
+
+
 
 
 

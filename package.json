@@ -10,6 +10,7 @@
   "license": "ISC",
   "dependencies": {
     "csvtojson": "^1.1.9",
+    "js-yaml": "^3.10.0",
     "json2csv": "^3.11.5"
   }
 }
