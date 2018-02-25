@@ -1,3 +1,4 @@
 PATHS:
-  load: "./csv/products.csv"
+  load: "./csv/first-page-products.csv"
   save: "csv/edited-products.csv"
+  brightpearl: "csv/brightpearl-products.csv"
