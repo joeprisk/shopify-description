@@ -27,7 +27,7 @@ csvToJson()
 function format(product) {
 
 
-    let needed = {"sku": product.sku, "merchant-shipping-group-name" : product.shipping};
+    let needed = {"sku": product.sku, "merchant-shipping-group-name" : 'Migrated Template'};
 
     Object.assign(product, helpers.amazonDefaultProduct, needed);
 
